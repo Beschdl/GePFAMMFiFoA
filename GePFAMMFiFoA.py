@@ -1,8 +1,9 @@
 import sys
 import os
-import tkinter
 import requests
 import subprocess
+
+folder_path="testfiles"
 
 base_speed = 4
 
@@ -15,13 +16,9 @@ def importPIL():
 		subprocess.check_call([sys.executable, "-m", "pip", "install", "pillow"])
 		sys.exit()
 
-def getSize(filen):
-	img = Image.open(filen)
-	width, height = img.size
-
-def walk():
+def walk(df):
 	allPngs = [os.path.join(root,name)
-				for (root, dirs, files) in os.walk("testfiles")
+				for (root, dirs, files) in os.walk(str(df))
 				for name in files
 				if name.endswith(("png"))]
 	return allPngs
@@ -30,6 +27,7 @@ def sort(list):
 	animated = []
 	frames = []
 	import PIL
+	from PIL import Image
 	for img in list:
 		opened = PIL.Image.open(img)
 		width, height = opened.size
@@ -47,12 +45,14 @@ def createFile(name, speed, frames):
 	file = open(name.replace("png", "mcmeta"),"w")
 	file.write(out)
 
+def generate(fd):
+		allNames, allFrames = sort(walk(fd))
+		i = 0
+		for f in allNames:
+			createFile(f, base_speed, int(allFrames[i]))
+			i+=1
+
+
 def main():
 	importPIL()
-	allNames, allFrames = sort(walk())
-	i = 0
-	for f in allNames:
-		createFile(f, base_speed, int(allFrames[i]))
-		i+=1
-
-main()
+	generate(folder_path)
