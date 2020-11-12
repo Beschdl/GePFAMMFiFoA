@@ -4,6 +4,7 @@ import tkinter
 import requests
 import subprocess
 
+base_speed = 4
 
 print()
 
@@ -35,7 +36,7 @@ def sort(list):
 		if width!=height:
 			animated.append(img)
 			frames.append(height/width)
-	return (animated, frames)
+	return animated, frames
 
 def createFile(name, speed, frames):
 	out="{\n	\"animation\": {\n	\"frametime\": "+str(speed)+",\n	\"frames\": [\n"
@@ -43,14 +44,15 @@ def createFile(name, speed, frames):
 		out+="	"+str(x)+",\n"
 	out+="	"+str(frames-1)+"\n"
 	out+="		]\n	}\n}"
-	print(out)
-
-
+	file = open(name.replace("png", "mcmeta"),"w")
+	file.write(out)
 
 def main():
 	importPIL()
-	print(sort(walk()))
-	print("\n")
-	createFile(1,1,12)
+	allNames, allFrames = sort(walk())
+	i = 0
+	for f in allNames:
+		createFile(f, base_speed, int(allFrames[i]))
+		i+=1
 
 main()
